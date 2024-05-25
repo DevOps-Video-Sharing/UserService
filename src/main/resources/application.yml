@@ -1,0 +1,10 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: user-service
+  data:
+    mongodb:
+      # uri: ${SPRING_DATA_MONGODB_URI}
+      uri: mongodb://localhost:27017/user-service
