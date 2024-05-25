@@ -91,7 +91,7 @@ public class UserController {
             user.setFirstName(user.getFirstName());
             user.setLastName(user.getLastName());
             user.setTimestamp(new Date());
-            user.setAvatar(getDefaultAvatar());
+            // user.setAvatar(getDefaultAvatar());
             AuthUser save = userRepository.save(user);
             return ResponseEntity.ok(save);
         } catch (Exception e) {
