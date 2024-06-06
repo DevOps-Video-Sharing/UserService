@@ -18,14 +18,10 @@ public class AuthUser {
     private String username;
     private String password;
     private boolean active;
-
     private String firstName;
     private String lastName;
-    // private String picture;
     private String sub;
     private byte[] avatar;
-
     private String email;
-
     private Date timestamp;
 }

@@ -15,6 +15,7 @@ import com.google.gson.Gson;
 import com.programming.streaming.entity.AuthUser;
 import com.programming.streaming.repository.AuthUserRepository;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -36,7 +37,7 @@ import java.util.Map;
 @RequestMapping("/user")
 public class UserController {
 
-    private final AuthUserRepository userRepository;
+private final AuthUserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     @Autowired
     private JavaMailSender javaMailSender;
@@ -49,39 +50,26 @@ public class UserController {
         }
     }
 
+    @CrossOrigin(origins = "*")
     @PostMapping("/send-verification-email")
     public String sendVerificationEmail(@RequestBody String emailJson) {
         SimpleMailMessage message = new SimpleMailMessage();
-        System.out.println(emailJson);
         Gson gson = new Gson();
         Email emailObject = gson.fromJson(emailJson, Email.class);
-
-        // Extract email value
         String email = emailObject.getEmail();
-
-        System.out.println(email);
-        System.out.println(email);
         message.setTo(email);
-        System.out.println(email);
         message.setSubject("Xác thực đăng ký");
-        String loginLink = "http://localhost:3000/login";
         message.setText("Xin chào, Bạn đã đăng ký tài khoản thành công!");
 
         try {
             javaMailSender.send(message);
             return "Email xác thực đã được gửi thành công";
         } catch (MailException e) {
-            System.out.println(e.getMessage());
             return "Gửi email xác thực thất bại: " + e.getMessage();
         }
     }
-    @GetMapping("/")    
-    public ResponseEntity<Map<String, String>> getMethodName() {
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "User service");
-        return ResponseEntity.ok(response);
-    }
 
+    @CrossOrigin(origins = "*")
     @PostMapping("/register")
     public ResponseEntity registerUser(@RequestBody AuthUser user) {
         try {
@@ -91,7 +79,7 @@ public class UserController {
             user.setFirstName(user.getFirstName());
             user.setLastName(user.getLastName());
             user.setTimestamp(new Date());
-            // user.setAvatar(getDefaultAvatar());
+            user.setAvatar(getDefaultAvatar());
             AuthUser save = userRepository.save(user);
             return ResponseEntity.ok(save);
         } catch (Exception e) {
@@ -105,6 +93,7 @@ public class UserController {
         return Files.readAllBytes(path);
     }
 
+    @CrossOrigin(origins = "*")
     @PostMapping("/login2")
     public ResponseEntity loginUser(@RequestBody AuthUser user) {
         try {
@@ -120,6 +109,7 @@ public class UserController {
         }
     }
 
+    @CrossOrigin(origins = "*")
     @PostMapping("/logout")
     public ResponseEntity logoutUser() {
         try {
@@ -147,6 +137,7 @@ public class UserController {
         }
     }
 
+    @CrossOrigin(origins = "*")
     @GetMapping("/listUserbyId/{id}")
     public ResponseEntity listUserbyId(@PathVariable("id") String id) {
         try {
@@ -156,6 +147,7 @@ public class UserController {
         }
     }
 
+    @CrossOrigin(origins = "*")
     @PutMapping("/updateProfile/{id}")
     public ResponseEntity updateProfile(@PathVariable("id") String id, @RequestBody AuthUser user) {
         try {
@@ -164,13 +156,53 @@ public class UserController {
 
             userFromDb.setFirstName(user.getFirstName());
             userFromDb.setLastName(user.getLastName());
-            // userFromDb.setPicture(user.getPicture());
-            // userFromDb.setAvatar(uploadAvatar());
             AuthUser save = userRepository.save(userFromDb);
 
             return ResponseEntity.ok(HttpStatus.OK);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
+
+    @CrossOrigin(origins = "*")
+    @PutMapping("/changePassword/{id}")
+    public ResponseEntity changePassword(@PathVariable("id") String id,
+            @RequestBody ChangePasswordRequest changePasswordRequest) {
+        try {
+            AuthUser userFromDb = userRepository.findById(id)
+                    .orElseThrow(() -> new Exception("User not found"));
+
+            if (!passwordEncoder.matches(changePasswordRequest.getCurrentPassword(), userFromDb.getPassword())) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Current password is incorrect");
+            }
+
+            userFromDb.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
+            AuthUser save = userRepository.save(userFromDb);
+
+            return ResponseEntity.ok("Password changed successfully");
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
+
+    static class ChangePasswordRequest {
+        private String currentPassword;
+        private String newPassword;
+
+        public String getCurrentPassword() {
+            return currentPassword;
+        }
+
+        public void setCurrentPassword(String currentPassword) {
+            this.currentPassword = currentPassword;
+        }
+
+        public String getNewPassword() {
+            return newPassword;
+        }
+
+        public void setNewPassword(String newPassword) {
+            this.newPassword = newPassword;
         }
     }
 }
