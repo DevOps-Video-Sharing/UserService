@@ -1,5 +1,5 @@
 
-name: Continuous Deployment for Comment Service
+name: Continuous Deployment for User Service
 
 on:
   push:
