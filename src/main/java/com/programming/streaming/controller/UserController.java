@@ -15,7 +15,6 @@ import com.google.gson.Gson;
 import com.programming.streaming.entity.AuthUser;
 import com.programming.streaming.repository.AuthUserRepository;
 
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -50,7 +49,6 @@ private final AuthUserRepository userRepository;
         }
     }
 
-    @CrossOrigin(origins = "*")
     @PostMapping("/send-verification-email")
     public String sendVerificationEmail(@RequestBody String emailJson) {
         SimpleMailMessage message = new SimpleMailMessage();
@@ -69,7 +67,6 @@ private final AuthUserRepository userRepository;
         }
     }
 
-    @CrossOrigin(origins = "*")
     @PostMapping("/register")
     public ResponseEntity registerUser(@RequestBody AuthUser user) {
         try {
@@ -88,12 +85,11 @@ private final AuthUserRepository userRepository;
     }
 
     private byte[] getDefaultAvatar() throws IOException {
-        String defaultAvatarPath = "src/main/java/com/programming/streaming/images/avatar.png"; // Replace with the actual path to the default avatar image
+        String defaultAvatarPath = "/app/images/avatar.png"; // Path inside the Docker container
         Path path = Paths.get(defaultAvatarPath);
         return Files.readAllBytes(path);
     }
 
-    @CrossOrigin(origins = "*")
     @PostMapping("/login2")
     public ResponseEntity loginUser(@RequestBody AuthUser user) {
         try {
@@ -109,7 +105,6 @@ private final AuthUserRepository userRepository;
         }
     }
 
-    @CrossOrigin(origins = "*")
     @PostMapping("/logout")
     public ResponseEntity logoutUser() {
         try {
@@ -137,7 +132,6 @@ private final AuthUserRepository userRepository;
         }
     }
 
-    @CrossOrigin(origins = "*")
     @GetMapping("/listUserbyId/{id}")
     public ResponseEntity listUserbyId(@PathVariable("id") String id) {
         try {
@@ -147,7 +141,6 @@ private final AuthUserRepository userRepository;
         }
     }
 
-    @CrossOrigin(origins = "*")
     @PutMapping("/updateProfile/{id}")
     public ResponseEntity updateProfile(@PathVariable("id") String id, @RequestBody AuthUser user) {
         try {
@@ -164,7 +157,6 @@ private final AuthUserRepository userRepository;
         }
     }
 
-    @CrossOrigin(origins = "*")
     @PutMapping("/changePassword/{id}")
     public ResponseEntity changePassword(@PathVariable("id") String id,
             @RequestBody ChangePasswordRequest changePasswordRequest) {
