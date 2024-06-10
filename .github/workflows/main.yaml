@@ -1,4 +1,4 @@
-name: Continuous Integration for User Service
+name: Continuous Integration for Comment Service
 
 on:
   push:
@@ -6,10 +6,11 @@ on:
       - main
 
 jobs:
-  build-deploy:
-    name: Build and Deploy Comment Service 
+  testing:
+    name: Testing Comment Service
     runs-on: ubuntu-latest
     steps:
+
       - name: Checkout code
         uses: actions/checkout@v3
 
@@ -24,3 +25,27 @@ jobs:
 
       - name: Unit Tests
         run: mvn -B test --file pom.xml
+
+      # - name: SonarQube Scan
+      #   env:
+      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      #   run: mvn org.sonarsource.scanner.maven:sonar-maven-plugin:4.0.0.4121:sonar \
+      #         -Dsonar.projectKey=devops-video-sharing \
+      #         -Dsonar.host.url=https://sonarcloud.io \
+      #         -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+
+  build-image:
+    needs: testing
+    uses: ./.github/workflows/build-image.yaml
+    secrets:
+      DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+  scan-image:
+    needs: build-image
+    uses: ./.github/workflows/scan-image.yaml
+
+  notify:
+    needs: scan-image
+    uses: ./.github/workflows/notifyCI.yaml
+    secrets:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
