@@ -22,8 +22,39 @@ spec:
           value: user-service
         resources:
           limits:
-            memory: 256Mi
-            cpu: "1"
+            memory: "128Mi"
+            cpu: "0.2"
+        volumeMounts:
+        - name: mongo-storage
+          mountPath: /data/db
+      volumes:
+      - name: mongo-storage
+        persistentVolumeClaim:
+          claimName: user-mongo-pvc
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: user-mongo-pv
+spec:
+  capacity:
+    storage: 256Mi
+  accessModes:
+    - ReadWriteOnce
+  gcePersistentDisk:
+    pdName: user-mongo-disk
+    fsType: ext4
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: user-mongo-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 256Mi
 ---
 apiVersion: v1
 kind: Service
@@ -36,4 +67,3 @@ spec:
     - protocol: TCP
       port: 27017
       targetPort: 27017
-
