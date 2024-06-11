@@ -8,7 +8,7 @@ on:
 
 jobs:
   success_notifier:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: success()
     runs-on: ubuntu-latest
     steps:
       - name: Send success notification on Slack
@@ -22,7 +22,7 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
   failure_notifier:
-    if: ${{ github.event.workflow_run.conclusion != 'success' }}
+    if: failure()
     runs-on: ubuntu-latest
     steps:
       - name: Send failure notification on Slack
