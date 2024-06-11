@@ -1,4 +1,4 @@
-package com.programming.streaming.service;
+package com.programming.userService.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.User;
@@ -6,8 +6,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import com.programming.streaming.entity.AuthUser;
-import com.programming.streaming.repository.AuthUserRepository;
+
+import com.programming.userService.entity.AuthUser;
+import com.programming.userService.repository.AuthUserRepository;
 
 import java.util.Optional;
 

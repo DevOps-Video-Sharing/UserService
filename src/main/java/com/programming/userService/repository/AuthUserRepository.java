@@ -1,8 +1,10 @@
-package com.programming.streaming.repository;
+package com.programming.userService.repository;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
-import com.programming.streaming.entity.AuthUser;
+
+import com.programming.userService.entity.AuthUser;
+
 import java.util.Optional;
 
 @Repository
