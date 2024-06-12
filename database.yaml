@@ -21,9 +21,13 @@ spec:
         - name: MONGO_INITDB_DATABASE
           value: user-service
         resources:
+          requests:
+            memory: "32Mi"
+            cpu: "0.05"
           limits:
-            memory: "128Mi"
-            cpu: "0.2"
+            memory: "64Mi"
+            cpu: "0.1"
+          
         volumeMounts:
         - name: mongo-storage
           mountPath: /data/db
@@ -38,7 +42,7 @@ metadata:
   name: user-mongo-pv
 spec:
   capacity:
-    storage: 256Mi
+    storage: 70Mi
   accessModes:
     - ReadWriteOnce
   gcePersistentDisk:
@@ -54,7 +58,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 256Mi
+      storage: 70Mi
 ---
 apiVersion: v1
 kind: Service
