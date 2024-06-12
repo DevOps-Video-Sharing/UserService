@@ -48,3 +48,9 @@ jobs:
       - name: Apply Kubernetes manifests
         run: |
           kubectl apply -f resources.yaml
+
+  notifications:
+    needs: deploy
+    uses: ./.github/workflows/notifyCD.yaml
+    secrets:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL}} 
