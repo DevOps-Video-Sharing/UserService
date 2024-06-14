@@ -1,4 +1,4 @@
-package com.programming.streaming.entity;
+package com.programming.userService.entity;
 
 import lombok.Builder;
 import lombok.Data;

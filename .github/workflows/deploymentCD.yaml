@@ -1,10 +1,10 @@
-
 name: Continuous Deployment for User Service
 
 on:
-  push:
-    branches:
-      - main
+  workflow_run:
+    workflows: ["Continuous Integration for Comment Service"]
+    types:
+      - completed
 
 env:
   PROJECT_ID: gke-project-423206
@@ -29,28 +29,17 @@ jobs:
         run: |
           mvn clean
           mvn -B package --file pom.xml
-      
+
       - name: Authenticate
         uses: google-github-actions/auth@v2
         with: 
           credentials_json: ${{ secrets.GCP_SA_KEY }}
-          
+
       - name: Configure gcloud
         uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ${{ env.PROJECT_ID }}
           install_components: 'gke-gcloud-auth-plugin'
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v1
-        with:
-          username: datuits
-          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-
-      - name: Build and Push the docker image
-        run: |
-          docker build -t datuits/devops-user-service:latest .
-          docker push datuits/devops-user-service:latest
 
       - name: Set cluster context
         run: |
@@ -59,3 +48,9 @@ jobs:
       - name: Apply Kubernetes manifests
         run: |
           kubectl apply -f resources.yaml
+
+  notifications:
+    needs: deploy
+    uses: ./.github/workflows/notifyCD.yaml
+    secrets:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL}} 
