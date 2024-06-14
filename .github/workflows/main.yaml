@@ -3,7 +3,7 @@ name: Continuous Integration for Comment Service
 on:
   push:
     branches:
-      - main
+      - temp-branch
 
 jobs:
   testing:
