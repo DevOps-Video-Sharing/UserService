@@ -48,7 +48,7 @@ private final AuthUserRepository userRepository;
             return email;
         }
     }
-    @GetMapping("/)
+    @GetMapping("/")
     public String getServiceName(){
         return "User Service";
     }
