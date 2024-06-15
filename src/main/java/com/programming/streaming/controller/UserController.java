@@ -48,6 +48,10 @@ private final AuthUserRepository userRepository;
             return email;
         }
     }
+    @GetMapping("/)
+    public String getServiceName(){
+        return "User Service";
+    }
 
     @PostMapping("/send-verification-email")
     public String sendVerificationEmail(@RequestBody String emailJson) {
