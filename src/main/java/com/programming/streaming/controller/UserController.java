@@ -49,6 +49,11 @@ private final AuthUserRepository userRepository;
         }
     }
 
+    @GetMapping("/")
+    public String getServiceName(){
+        return "User Service";
+    }
+
     @PostMapping("/send-verification-email")
     public String sendVerificationEmail(@RequestBody String emailJson) {
         SimpleMailMessage message = new SimpleMailMessage();
