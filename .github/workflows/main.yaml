@@ -26,24 +26,4 @@ jobs:
       - name: Unit Tests
         run: mvn -B test --file pom.xml
 
-  deploy:
-    needs: testing
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    - name: Setup Helm
-      run: |
-        curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
-        helm repo add bitnami https://charts.bitnami.com/bitnami
-        helm repo update
-
-    # - name: Deploy MongoDB
-    #   run: |
-    #     helm upgrade --install my-mongo bitnami/mongodb
-
-    - name: Deploy user-service
-      run: |
-        helm upgrade --install user-service ./user-service --set image.repository=datuits/devops-user-service,image.tag=latest
+ 
