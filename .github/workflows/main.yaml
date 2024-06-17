@@ -6,25 +6,21 @@ on:
       - dev
 
 jobs:
-  deploy:
+  job1:
     runs-on: ubuntu-latest
+    name: build example and deploy to minikube
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up Kubectl
-        uses: azure/setup-kubectl@v3
-        with:
-          version: 'latest'
-
-      - name: Set up Kubeconfig
-        run: |
-          mkdir -p $HOME/.kube
-          cp kubeconfig.yaml $HOME/.kube/config
-          sed -i "s|\${CA_CRT_BASE64}|${{ secrets.CA_CRT_BASE64 }}|" $HOME/.kube/config
-          sed -i "s|\${CLIENT_CRT_BASE64}|${{ secrets.CLIENT_CRT_BASE64 }}|" $HOME/.kube/config
-          sed -i "s|\${CLIENT_KEY_BASE64}|${{ secrets.CLIENT_KEY_BASE64 }}|" $HOME/.kube/config
-
-      - name: Deploy to Kubernetes
-        run: |
-          kubectl apply -f resources.yml
+    - uses: actions/checkout@v2
+    - name: Start minikube
+      uses: medyagh/setup-minikube@master
+    - name: Try the cluster !
+      run: kubectl get pods -A
+    - name: Deploy to minikube
+      run:
+        kubectl apply -f resources.yaml
+    - name: Test service URLs
+      run: |
+        minikube service list
+        minikube service example --url
+        echo "------------------opening the service------------------"
+        curl $(minikube service example --url)
