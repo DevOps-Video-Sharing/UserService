@@ -1,4 +1,5 @@
-name: Continuous Integration for Comment Service
+# GitHub Actions Workflow
+name: CI/CD Pipeline
 
 on:
   push:
@@ -6,43 +7,35 @@ on:
       - dev
 
 jobs:
-  testing:
-    name: Testing Comment Service
+  build:
     runs-on: ubuntu-latest
+
     steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Set up JDK 17
+      uses: actions/setup-java@v2
+      with:
+        java-version: 17
 
-      - name: Setup JDK 17
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'corretto'
-          java-version: 17
+    - name: Build with Maven
+      run: mvn clean package
 
-      - name: Set up MongoDB URI
-        run: echo "SPRING_DATA_MONGODB_URI=mongodb://localhost:27017/user-service" >> $GITHUB_ENV
-
-      - name: Unit Tests
-        run: mvn -B test --file pom.xml
-
-
-  build-image:
-    needs: testing
-    uses: ./.github/workflows/build-image.yaml
-    secrets:
-      DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
   deploy:
-    need: build-image
-    name: deploy
+    needs: build
     runs-on: ubuntu-latest
-    steps:
-      - name: Deploy DB
-        run: |
-            kubectl apply -f database.yaml
-      - name: Deploy K8S
-        run: |
-            kubectl apply -f resources.yaml
 
-      
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Setup Helm
+      uses: azure/setup-helm@v1
+
+    - name: Deploy to Kubernetes
+      run: |
+        helm repo add bitnami https://charts.bitnami.com/bitnami
+        helm upgrade --install my-mongo bitnami/mongodb
+        helm upgrade --install user-service ./user-service --set image.repository=datuits/devops-user-service,image.tag=latest
