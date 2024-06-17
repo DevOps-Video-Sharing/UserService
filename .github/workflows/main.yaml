@@ -1,26 +1,38 @@
-name: Continuous Integration for User Service
+name: CD
 
 on:
   push:
     branches:
       - dev
+env:
+  DOCKERHUB_USERNAME: datuits
+  DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+  IMAGE_NAME: datuits/devops-user-service:latest
 
 jobs:
-  job1:
+  build-and-deploy:
     runs-on: ubuntu-latest
-    name: build example and deploy to minikube
+
     steps:
-    - uses: actions/checkout@v2
-    - name: Start minikube
-      uses: medyagh/setup-minikube@master
-    - name: Try the cluster !
-      run: kubectl get pods -A
-    - name: Deploy to minikube
-      run:
-        kubectl apply -f resources.yaml
-    - name: Test service URLs
-      run: |
-        minikube service list
-        minikube service example --url
-        echo "------------------opening the service------------------"
-        curl $(minikube service example --url)        
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # - name: Login to Docker Hub
+      #   uses: docker/login-action@v1
+      #   with:
+      #     username: ${{ env.DOCKERHUB_USERNAME }}
+      #     password: ${{ env.DOCKER_HUB_ACCESS_TOKEN }}
+
+      # - name: Build Docker image
+      #   run: docker build -t ${{ env.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }} .
+
+      # - name: Push Docker image
+      #   run: docker push ${{ env.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+
+      - name: Update values.yaml
+        run: |
+          cd helm
+          sed -i 's|APP_VERSION:.*|APP_VERSION: '${{ github.sha }}'|' values.yaml 
+          git add values.yaml
+          git commit -m "Update values.yaml"
+          git push
