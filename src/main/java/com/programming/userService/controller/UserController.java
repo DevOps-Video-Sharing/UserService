@@ -1,4 +1,4 @@
-package com.programming.streaming.controller;
+package com.programming.userService.controller;
 
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.google.gson.Gson;
-import com.programming.streaming.entity.AuthUser;
-import com.programming.streaming.repository.AuthUserRepository;
+import com.programming.userService.entity.AuthUser;
+import com.programming.userService.repository.AuthUserRepository;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -47,6 +47,10 @@ private final AuthUserRepository userRepository;
         public String getEmail() {
             return email;
         }
+    }
+    @GetMapping("/")
+    public String getServiceName(){
+        return "User Service";
     }
 
     @PostMapping("/send-verification-email")
