@@ -11,25 +11,29 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v2
 
-    - name: Set up K8s environment
+    - name: Set up Minikube
       run: |
-        # Install kubectl
+        curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+        sudo install minikube /usr/local/bin/
+        sudo apt-get update -y
+        sudo apt-get install -y conntrack
+
+    - name: Start Minikube
+      run: |
+        minikube start --driver=docker
+
+    - name: Set up kubectl
+      run: |
         curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-        chmod +x ./kubectl
-        sudo mv ./kubectl /usr/local/bin/kubectl
-        
-        # Install Minikube
-        curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
-        sudo install minikube-linux-amd64 /usr/local/bin/minikube
+        chmod +x kubectl
+        sudo mv kubectl /usr/local/bin/
 
-        # Start Minikube
-        sudo minikube start --driver=none
-
-        # Set up kubectl context to use Minikube
-        sudo minikube kubectl -- get po -A
-
-    - name: Deploy to Minikube
+    - name: Apply Kubernetes manifests
       run: |
         kubectl apply -f resources.yaml
+
+    - name: Get Minikube service URL
+      run: |
+        minikube service user-service --url
