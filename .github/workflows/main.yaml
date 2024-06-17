@@ -64,5 +64,4 @@ users:
 EOF
 
       - name: Deploy to Kubernetes
-        run: |
-          kubectl apply -f resources.yml
+        run: kubectl apply -f resources.yml
