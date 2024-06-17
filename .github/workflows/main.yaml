@@ -23,6 +23,9 @@ jobs:
         kubectl apply -f resources.yaml
     - name: Test service URLs
       run: |
+        kubectl get pods
+        kubectl get services
+        kubectl get deployments
         minikube service list
         minikube service user-service --url
         echo "------------------opening the service------------------"
