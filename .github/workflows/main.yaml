@@ -34,6 +34,15 @@ jobs:
       run: |
         kubectl apply -f resources.yaml
 
+    - name: Wait for pods to be ready
+      run: |
+        kubectl wait --for=condition=ready pod --all --timeout=120s
+
+    - name: Get pod and service status
+      run: |
+        kubectl get pods
+        kubectl get svc
+
     - name: Get Minikube service URL
       run: |
         minikube service user-service --url
