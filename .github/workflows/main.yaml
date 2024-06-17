@@ -62,3 +62,7 @@ jobs:
               client-certificate-data: ${{ secrets.CLIENT_CRT_BASE64 }}
               client-key-data: ${{ secrets.CLIENT_KEY_BASE64 }}
           ' > $HOME/.kube/config
+
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl apply -f resources.yml
