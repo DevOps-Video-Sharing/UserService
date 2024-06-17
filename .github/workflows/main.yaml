@@ -40,7 +40,7 @@ jobs:
       - name: Set up Kubeconfig
         run: |
           mkdir -p $HOME/.kube
-          echo '
+          echo "
           apiVersion: v1
           clusters:
           - cluster:
@@ -61,7 +61,7 @@ jobs:
             user:
               client-certificate-data: ${{ secrets.CLIENT_CRT_BASE64 }}
               client-key-data: ${{ secrets.CLIENT_KEY_BASE64 }}
-          ' > $HOME/.kube/config
+          " > $HOME/.kube/config
 
       - name: Deploy to Kubernetes
         run: |
