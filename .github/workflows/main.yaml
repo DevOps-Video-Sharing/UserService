@@ -6,43 +6,26 @@ on:
       - dev
 
 jobs:
-  deploy:
+  example:
+    name: Example Minikube-Kubernetes Cluster interaction
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Minikube
+        uses: manusa/actions-setup-minikube@v2.11.0
+        with:
+          minikube version: 'v1.33.0'
+          kubernetes version: 'v1.30.0'
+          github token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Interact with the cluster
+        run: kubectl get nodes
+      
+      - name: Deploy K8S
+          run: kubectl apply -f resources.yaml
 
-    - name: Set up Minikube
-      run: |
-        curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
-        sudo install minikube /usr/local/bin/
-        sudo apt-get update -y
-        sudo apt-get install -y conntrack
-
-    - name: Start Minikube
-      run: |
-        minikube start --driver=docker
-
-    - name: Set up kubectl
-      run: |
-        curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-        chmod +x kubectl
-        sudo mv kubectl /usr/local/bin/
-
-    - name: Apply Kubernetes manifests
-      run: |
-        kubectl apply -f resources.yaml
-
-    - name: Wait for pods to be ready
-      run: |
-        kubectl wait --for=condition=ready pod --all --timeout=120s
-
-    - name: Get pod and service status
-      run: |
-        kubectl get pods
-        kubectl get svc
-
-    - name: Get Minikube service URL
-      run: |
-        minikube service user-service --url
+      - name: Get All
+          run: kubectl get all
+      
+      - name: minikube service
+          run: minikube service user-service --url
