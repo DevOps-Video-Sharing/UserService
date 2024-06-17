@@ -41,9 +41,9 @@ jobs:
         run: |
           mkdir -p $HOME/.kube
           cp kubeconfig.yaml $HOME/.kube/config
-          sed -i "s|${CA_CRT_BASE64}|${{ secrets.CA_CRT_BASE64 }}|" $HOME/.kube/config
-          sed -i "s|${CLIENT_CRT_BASE64}|${{ secrets.CLIENT_CRT_BASE64 }}|" $HOME/.kube/config
-          sed -i "s|${CLIENT_KEY_BASE64}|${{ secrets.CLIENT_KEY_BASE64 }}|" $HOME/.kube/config
+          sed -i "s|CA_CERT_BASE64|$(echo ${CA_CRT_BASE64} | sed 's/[&/]/\\&/g')|" $HOME/.kube/config
+          sed -i "s|CLIENT_CERT_BASE64|$(echo ${CLIENT_CRT_BASE64} | sed 's/[&/]/\\&/g')|" $HOME/.kube/config
+          sed -i "s|CLIENT_KEY_BASE64|$(echo ${CLIENT_KEY_BASE64} | sed 's/[&/]/\\&/g')|" $HOME/.kube/config
 
       - name: Deploy to Kubernetes
         run: |
