@@ -21,9 +21,44 @@ spec:
         - name: MONGO_INITDB_DATABASE
           value: user-service
         resources:
+          requests:
+            memory: "32Mi"
+            cpu: "0.05"
           limits:
-            memory: 256Mi
-            cpu: "1"
+            memory: "64Mi"
+            cpu: "0.1"
+          
+        volumeMounts:
+        - name: mongo-storage
+          mountPath: /data/db
+      volumes:
+      - name: mongo-storage
+        persistentVolumeClaim:
+          claimName: user-mongo-pvc
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: user-mongo-pv
+spec:
+  capacity:
+    storage: 70Mi
+  accessModes:
+    - ReadWriteOnce
+  gcePersistentDisk:
+    pdName: user-mongo-disk
+    fsType: ext4
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: user-mongo-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 70Mi
 ---
 apiVersion: v1
 kind: Service
@@ -36,4 +71,3 @@ spec:
     - protocol: TCP
       port: 27017
       targetPort: 27017
-

@@ -1,4 +1,4 @@
-package com.programming.streaming.config;
+package com.programming.userService.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
