@@ -22,7 +22,8 @@ jobs:
         run: kubectl get nodes
       
       - name: Deploy K8S
-          run: kubectl apply -f resources.yaml
+          run: |
+            kubectl apply -f resources.yaml
 
       - name: Get All
           run: kubectl get all
