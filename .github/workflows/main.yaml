@@ -41,27 +41,27 @@ jobs:
         run: |
           mkdir -p $HOME/.kube
           cat <<EOF > $HOME/.kube/config
-apiVersion: v1
-clusters:
-- cluster:
-    certificate-authority-data: ${{ secrets.CA_CRT_BASE64 }}
-    server: https://127.0.0.1:32769
-  name: minikube
-contexts:
-- context:
-    cluster: minikube
-    namespace: default
-    user: minikube
-  name: minikube
-current-context: minikube
-kind: Config
-preferences: {}
-users:
-- name: minikube
-  user:
-    client-certificate-data: ${{ secrets.CLIENT_CRT_BASE64 }}
-    client-key-data: ${{ secrets.CLIENT_KEY_BASE64 }}
-EOF
+          apiVersion: v1
+          clusters:
+          - cluster:
+              certificate-authority-data: ${{ secrets.CA_CRT_BASE64 }}
+              server: https://127.0.0.1:32769
+            name: minikube
+          contexts:
+          - context:
+              cluster: minikube
+              namespace: default
+              user: minikube
+            name: minikube
+          current-context: minikube
+          kind: Config
+          preferences: {}
+          users:
+          - name: minikube
+            user:
+              client-certificate-data: ${{ secrets.CLIENT_CRT_BASE64 }}
+              client-key-data: ${{ secrets.CLIENT_KEY_BASE64 }}
+          EOF
 
       - name: Deploy to Kubernetes
         run: |
