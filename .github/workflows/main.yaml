@@ -26,6 +26,8 @@ jobs:
         kubectl get pods
         kubectl get services
         kubectl get deployments
+        kubectl get all
+        curl $(kubectl get all)
         minikube service list
         minikube service user-service --url
         echo "------------------opening the service------------------"
