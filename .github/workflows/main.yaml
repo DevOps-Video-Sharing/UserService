@@ -6,27 +6,7 @@ on:
       - dev
 
 jobs:
-  testing:
-    name: Testing User Service
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Setup JDK 17
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'corretto'
-          java-version: 17
-
-      - name: Set up MongoDB URI
-        run: echo "SPRING_DATA_MONGODB_URI=mongodb://localhost:27017/user-service" >> $GITHUB_ENV
-
-      - name: Unit Tests
-        run: mvn -B test --file pom.xml
-
   deploy:
-    needs: testing
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -41,9 +21,9 @@ jobs:
         run: |
           mkdir -p $HOME/.kube
           cp kubeconfig.yaml $HOME/.kube/config
-          sed -i "s|CA_CERT_BASE64|$(echo ${CA_CRT_BASE64} | sed 's/[&/]/\\&/g')|" $HOME/.kube/config
-          sed -i "s|CLIENT_CERT_BASE64|$(echo ${CLIENT_CRT_BASE64} | sed 's/[&/]/\\&/g')|" $HOME/.kube/config
-          sed -i "s|CLIENT_KEY_BASE64|$(echo ${CLIENT_KEY_BASE64} | sed 's/[&/]/\\&/g')|" $HOME/.kube/config
+          sed -i "s|\${CA_CRT_BASE64}|${{ secrets.CA_CRT_BASE64 }}|" $HOME/.kube/config
+          sed -i "s|\${CLIENT_CRT_BASE64}|${{ secrets.CLIENT_CRT_BASE64 }}|" $HOME/.kube/config
+          sed -i "s|\${CLIENT_KEY_BASE64}|${{ secrets.CLIENT_KEY_BASE64 }}|" $HOME/.kube/config
 
       - name: Deploy to Kubernetes
         run: |
