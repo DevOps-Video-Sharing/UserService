@@ -11,24 +11,39 @@ jobs:
     name: build example and deploy to minikube
     steps:
     - uses: actions/checkout@v2
+    
     - name: Start minikube
       uses: medyagh/setup-minikube@master
+    
+    - name: Wait for minikube to be ready
+      run: |
+        while ! minikube status | grep -q "host: Running"; do
+          echo "Waiting for Minikube to be ready..."
+          sleep 10
+        done
+    
     - name: Try the cluster !
       run: kubectl get pods -A
+    
     # - name: Deploy mongo db
     #   run:
     #     kubectl apply -f database.yaml
+    
     - name: Deploy to minikube
       run: |
         kubectl apply -f resources.yaml
+    
+    - name: Wait for resources to be ready
+      run: |
+        kubectl wait --for=condition=available --timeout=600s deployment/user-service
+    
     - name: Test service URLs
       run: |
         kubectl get pods
         kubectl get services
         kubectl get deployments
         kubectl get all
-        curl $(kubectl get all)
-        minikube service list
-        minikube service user-service --url
+        SERVICE_URL=$(minikube service user-service --url)
+        echo "Service URL: $SERVICE_URL"
         echo "------------------opening the service------------------"
-        curl $(minikube service user-service --url)
+        curl $SERVICE_URL
