@@ -46,4 +46,15 @@ jobs:
         SERVICE_URL=$(minikube service user-service --url)
         echo "Service URL: $SERVICE_URL"
         echo "------------------opening the service------------------"
+        # Check if the service is accessible
+        RETRIES=5
+        until $(curl --output /dev/null --silent --head --fail $SERVICE_URL); do
+          if [ $RETRIES -le 0 ]; then
+            echo "Service is not accessible at $SERVICE_URL"
+            exit 1
+          fi
+          echo "Waiting for the service to be accessible..."
+          RETRIES=$((RETRIES-1))
+          sleep 10
+        done
         curl $SERVICE_URL
