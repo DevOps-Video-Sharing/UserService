@@ -40,9 +40,9 @@ jobs:
         helm repo add bitnami https://charts.bitnami.com/bitnami
         helm repo update
 
-    - name: Deploy MongoDB
-      run: |
-        helm upgrade --install my-mongo bitnami/mongodb
+    # - name: Deploy MongoDB
+    #   run: |
+    #     helm upgrade --install my-mongo bitnami/mongodb
 
     - name: Deploy user-service
       run: |
