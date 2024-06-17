@@ -1,4 +1,4 @@
-name: Continuous Integration for User Service
+name: Deploy to Minikube
 
 on:
   push:
@@ -6,68 +6,30 @@ on:
       - dev
 
 jobs:
-  job1:
+  deploy:
     runs-on: ubuntu-latest
-    name: Build example and deploy to Minikube
+
     steps:
-    - uses: actions/checkout@v2
-    
-    - name: Start Minikube
-      uses: medyagh/setup-minikube@master
-    
-    - name: Wait for Minikube to be ready
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up K8s environment
       run: |
-        while ! minikube status | grep -q "host: Running"; do
-          echo "Waiting for Minikube to be ready..."
-          sleep 10
-        done
-    
-    - name: Try the cluster
-      run: kubectl get pods -A
-    
+        # Install kubectl
+        curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+        chmod +x ./kubectl
+        sudo mv ./kubectl /usr/local/bin/kubectl
+        
+        # Install Minikube
+        curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+        sudo install minikube-linux-amd64 /usr/local/bin/minikube
+
+        # Start Minikube
+        sudo minikube start --driver=none
+
+        # Set up kubectl context to use Minikube
+        sudo minikube kubectl -- get po -A
+
     - name: Deploy to Minikube
       run: |
         kubectl apply -f resources.yaml
-    
-    - name: Wait for resources to be ready
-      run: |
-        kubectl wait --for=condition=available --timeout=600s deployment/user-service
-    
-    - name: Test service URLs
-      run: |
-        kubectl get pods
-        kubectl get services
-        kubectl get deployments
-        kubectl get all
-
-    - name: Install ngrok
-      run: |
-        curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null && \
-        echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | sudo tee /etc/apt/sources.list.d/ngrok.list && \
-        sudo apt update && sudo apt install ngrok
-
-    - name: Start ngrok tunnel
-      run: |
-        nohup ngrok http 8081 > /dev/null 2>&1 &
-        # Wait for the tunnel to be established
-        sleep 20
-
-    - name: Get the ngrok URL and test the service
-      run: |
-        SERVICE_URL=$(minikube service user-service --url)
-        echo "Service URL: $SERVICE_URL"
-        NGROK_URL=$(curl --silent --show-error http://127.0.0.1:4040/api/tunnels | jq -r '.tunnels[0].public_url')
-        echo "Ngrok URL: $NGROK_URL"
-        echo "------------------opening the service------------------"
-        # Check if the service is accessible
-        RETRIES=5
-        until $(curl --output /dev/null --silent --head --fail $NGROK_URL); do
-          if [ $RETRIES -le 0 ]; then
-            echo "Service is not accessible at $NGROK_URL"
-            exit 1
-          fi
-          echo "Waiting for the service to be accessible..."
-          RETRIES=$((RETRIES-1))
-          sleep 10
-        done
-        curl $NGROK_URL
