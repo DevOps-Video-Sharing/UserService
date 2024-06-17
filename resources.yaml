@@ -25,10 +25,10 @@ spec:
           resources:
             requests:
               memory: "32Mi"
-              cpu: "0.2"
+              cpu: "200m"
             limits:
               memory: "64Mi"
-              cpu: "0.4"
+              cpu: "400m"
 ---
 apiVersion: v1
 kind: Service
@@ -42,3 +42,4 @@ spec:
       port: 8081
       targetPort: 8081
   type: NodePort
+  nodePort: 30001  # Gán cụ thể nodePort để dễ dàng truy cập

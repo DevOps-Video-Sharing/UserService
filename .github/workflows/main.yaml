@@ -3,14 +3,13 @@ name: Continuous Integration for Comment Service
 on:
   push:
     branches:
-      - main
+      - dev
 
 jobs:
   testing:
     name: Testing Comment Service
     runs-on: ubuntu-latest
     steps:
-
       - name: Checkout code
         uses: actions/checkout@v3
 
@@ -26,11 +25,6 @@ jobs:
       - name: Unit Tests
         run: mvn -B test --file pom.xml
 
-  sonar-cloud-scan:
-    needs: testing
-    uses: ./.github/workflows/SonarQube.yaml
-    secrets:
-      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   build-image:
     needs: testing
@@ -38,13 +32,25 @@ jobs:
     secrets:
       DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-  scan-image:
-    needs: build-image
-    uses: ./.github/workflows/scan-image.yaml
 
-  notify:
-    needs: scan-image
-    uses: ./.github/workflows/notifyCI.yaml
-    secrets:
-      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-      
+  deploy:
+    needs: build-image
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Kubectl
+      uses: azure/setup-kubectl@v2
+      with:
+        version: 'latest'
+
+    - name: Set up Kubeconfig
+      run: |
+        mkdir -p $HOME/.kube
+        echo "${{ secrets.KUBE_CONFIG }}" > $HOME/.kube/config
+
+    - name: Deploy to Kubernetes
+      run: |
+        kubectl apply -f resources.yml
