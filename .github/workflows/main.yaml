@@ -40,11 +40,11 @@ jobs:
       - name: Set up Kubeconfig
         run: |
           mkdir -p $HOME/.kube
-          echo "
+          echo '
           apiVersion: v1
           clusters:
           - cluster:
-              certificate-authority-data: \${{ secrets.CA_CRT_BASE64 }}
+              certificate-authority-data: ${{ secrets.CA_CRT_BASE64 }}
               server: https://127.0.0.1:32769
             name: minikube
           contexts:
@@ -59,10 +59,6 @@ jobs:
           users:
           - name: minikube
             user:
-              client-certificate-data: \${{ secrets.CLIENT_CRT_BASE64 }}
-              client-key-data: \${{ secrets.CLIENT_KEY_BASE64 }}
-          " > $HOME/.kube/config
-
-      - name: Deploy to Kubernetes
-        run: |
-          kubectl apply -f resources.yml
+              client-certificate-data: ${{ secrets.CLIENT_CRT_BASE64 }}
+              client-key-data: ${{ secrets.CLIENT_KEY_BASE64 }}
+          ' > $HOME/.kube/config
