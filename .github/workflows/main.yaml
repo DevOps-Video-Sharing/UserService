@@ -8,28 +8,24 @@ on:
 jobs:
   job1:
     runs-on: ubuntu-latest
-    name: build example and deploy to minikube
+    name: Build example and deploy to Minikube
     steps:
     - uses: actions/checkout@v2
     
-    - name: Start minikube
+    - name: Start Minikube
       uses: medyagh/setup-minikube@master
     
-    - name: Wait for minikube to be ready
+    - name: Wait for Minikube to be ready
       run: |
         while ! minikube status | grep -q "host: Running"; do
           echo "Waiting for Minikube to be ready..."
           sleep 10
         done
     
-    - name: Try the cluster !
+    - name: Try the cluster
       run: kubectl get pods -A
     
-    # - name: Deploy mongo db
-    #   run:
-    #     kubectl apply -f database.yaml
-    
-    - name: Deploy to minikube
+    - name: Deploy to Minikube
       run: |
         kubectl apply -f resources.yaml
     
@@ -43,6 +39,15 @@ jobs:
         kubectl get services
         kubectl get deployments
         kubectl get all
+    
+    - name: Start Minikube tunnel
+      run: |
+        nohup minikube tunnel > /dev/null 2>&1 &
+        # Wait for the tunnel to be established
+        sleep 20
+    
+    - name: Get the service URL and test it
+      run: |
         SERVICE_URL=$(minikube service user-service --url)
         echo "Service URL: $SERVICE_URL"
         echo "------------------opening the service------------------"
