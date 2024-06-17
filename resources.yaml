@@ -20,8 +20,8 @@ spec:
           ports:
             - containerPort: 8081
           env:
-          - name: SPRING_DATA_MONGODB_URI
-            value: mongodb://user-mongo-service:27017/user-service
+            - name: SPRING_DATA_MONGODB_URI
+              value: mongodb://user-mongo-service:27017/user-service
           resources:
             requests:
               memory: "32Mi"
@@ -29,7 +29,9 @@ spec:
             limits:
               memory: "64Mi"
               cpu: "400m"
+
 ---
+
 apiVersion: v1
 kind: Service
 metadata:
@@ -42,4 +44,4 @@ spec:
       port: 8081
       targetPort: 8081
   type: NodePort
-  nodePort: 30001  # Gán cụ thể nodePort để dễ dàng truy cập
+  nodePort: 30001
