@@ -15,7 +15,7 @@ spec:
             containers:
                 - name: example-api
                   imagePullPolicy: Never
-                  image: local/example:latest
+                  image: datuits/devops-user-service:latest
                   resources:
                       limits:
                           cpu: 50m
