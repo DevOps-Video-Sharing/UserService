@@ -39,27 +39,35 @@ jobs:
         kubectl get services
         kubectl get deployments
         kubectl get all
-    
-    - name: Start Minikube tunnel
+
+    - name: Install ngrok
       run: |
-        nohup minikube tunnel > /dev/null 2>&1 &
+        curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null && \
+        echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | sudo tee /etc/apt/sources.list.d/ngrok.list && \
+        sudo apt update && sudo apt install ngrok
+
+    - name: Start ngrok tunnel
+      run: |
+        nohup ngrok http 8081 > /dev/null 2>&1 &
         # Wait for the tunnel to be established
         sleep 20
-    
-    - name: Get the service URL and test it
+
+    - name: Get the ngrok URL and test the service
       run: |
         SERVICE_URL=$(minikube service user-service --url)
         echo "Service URL: $SERVICE_URL"
+        NGROK_URL=$(curl --silent --show-error http://127.0.0.1:4040/api/tunnels | jq -r '.tunnels[0].public_url')
+        echo "Ngrok URL: $NGROK_URL"
         echo "------------------opening the service------------------"
         # Check if the service is accessible
         RETRIES=5
-        until $(curl --output /dev/null --silent --head --fail $SERVICE_URL); do
+        until $(curl --output /dev/null --silent --head --fail $NGROK_URL); do
           if [ $RETRIES -le 0 ]; then
-            echo "Service is not accessible at $SERVICE_URL"
+            echo "Service is not accessible at $NGROK_URL"
             exit 1
           fi
           echo "Waiting for the service to be accessible..."
           RETRIES=$((RETRIES-1))
           sleep 10
         done
-        curl $SERVICE_URL
+        curl $NGROK_URL
