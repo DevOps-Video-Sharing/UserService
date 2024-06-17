@@ -35,10 +35,15 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Setup Helm
-      uses: azure/setup-helm@v1
-
-    - name: Deploy to Kubernetes
       run: |
+        curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
         helm repo add bitnami https://charts.bitnami.com/bitnami
+        helm repo update
+
+    - name: Deploy MongoDB
+      run: |
         helm upgrade --install my-mongo bitnami/mongodb
-        helm upgrade --install user-service ./user-service --set image.repository=your-docker-repo/user-service,image.tag=latest    
+
+    - name: Deploy user-service
+      run: |
+        helm upgrade --install user-service ./user-service --set image.repository=datuits/devops-user-service,image.tag=latest
