@@ -15,6 +15,7 @@ import com.google.gson.Gson;
 import com.programming.userService.entity.AuthUser;
 import com.programming.userService.repository.AuthUserRepository;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -30,13 +31,19 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Base64;
+
 
 @RestController
 @AllArgsConstructor
 @RequestMapping("/user")
 public class UserController {
 
-private final AuthUserRepository userRepository;
+    @GetMapping("/")
+    public String getServiceName(){
+        return "User Service";
+    }
+        private final AuthUserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     @Autowired
     private JavaMailSender javaMailSender;
@@ -48,11 +55,8 @@ private final AuthUserRepository userRepository;
             return email;
         }
     }
-    @GetMapping("/")
-    public String getServiceName(){
-        return "User Service";
-    }
 
+    @CrossOrigin(origins = "*")
     @PostMapping("/send-verification-email")
     public String sendVerificationEmail(@RequestBody String emailJson) {
         SimpleMailMessage message = new SimpleMailMessage();
@@ -71,6 +75,7 @@ private final AuthUserRepository userRepository;
         }
     }
 
+    @CrossOrigin(origins = "*")
     @PostMapping("/register")
     public ResponseEntity registerUser(@RequestBody AuthUser user) {
         try {
@@ -89,11 +94,12 @@ private final AuthUserRepository userRepository;
     }
 
     private byte[] getDefaultAvatar() throws IOException {
-        String defaultAvatarPath = "/app/images/avatar.png"; // Path inside the Docker container
+        String defaultAvatarPath = "src/main/java/com/programming/userService/images/avatar.png"; // Replace with the actual path to the default avatar image
         Path path = Paths.get(defaultAvatarPath);
         return Files.readAllBytes(path);
     }
 
+    @CrossOrigin(origins = "*")
     @PostMapping("/login2")
     public ResponseEntity loginUser(@RequestBody AuthUser user) {
         try {
@@ -109,6 +115,7 @@ private final AuthUserRepository userRepository;
         }
     }
 
+    @CrossOrigin(origins = "*")
     @PostMapping("/logout")
     public ResponseEntity logoutUser() {
         try {
@@ -136,6 +143,7 @@ private final AuthUserRepository userRepository;
         }
     }
 
+    @CrossOrigin(origins = "*")
     @GetMapping("/listUserbyId/{id}")
     public ResponseEntity listUserbyId(@PathVariable("id") String id) {
         try {
@@ -145,6 +153,7 @@ private final AuthUserRepository userRepository;
         }
     }
 
+    @CrossOrigin(origins = "*")
     @PutMapping("/updateProfile/{id}")
     public ResponseEntity updateProfile(@PathVariable("id") String id, @RequestBody AuthUser user) {
         try {
@@ -161,6 +170,7 @@ private final AuthUserRepository userRepository;
         }
     }
 
+    @CrossOrigin(origins = "*")
     @PutMapping("/changePassword/{id}")
     public ResponseEntity changePassword(@PathVariable("id") String id,
             @RequestBody ChangePasswordRequest changePasswordRequest) {
@@ -199,6 +209,29 @@ private final AuthUserRepository userRepository;
 
         public void setNewPassword(String newPassword) {
             this.newPassword = newPassword;
+        }
+    }
+
+    //change avatar
+    @CrossOrigin(origins = "*")
+    @PutMapping("/changeAvatar/{id}")
+    public ResponseEntity changeAvatar(@PathVariable("id") String id, @RequestParam("avatar") String base64Avatar) {
+        try {
+            AuthUser userFromDb = userRepository.findById(id)
+                    .orElseThrow(() -> new Exception("User not found"));
+
+            // Chuyển đổi chuỗi base64 thành mảng byte
+            byte[] avatarBytes = Base64.getDecoder().decode(base64Avatar);
+
+            userFromDb.setAvatar(avatarBytes);
+            AuthUser savedUser = userRepository.save(userFromDb);
+
+            return ResponseEntity.ok("Avatar changed successfully");
+        } catch (IllegalArgumentException e) {
+            // Xảy ra khi chuỗi base64 không hợp lệ
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid base64 string");
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 }
