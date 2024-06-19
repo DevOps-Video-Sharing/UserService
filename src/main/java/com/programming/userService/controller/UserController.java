@@ -43,6 +43,10 @@ public class UserController {
     public String getServiceName(){
         return "User Service";
     }
+    @GetMapping("/test")
+    public String getTest(){
+        return "Test User Service";
+    }
 
     private final AuthUserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
