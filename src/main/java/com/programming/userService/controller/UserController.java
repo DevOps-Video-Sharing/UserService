@@ -43,7 +43,8 @@ public class UserController {
     public String getServiceName(){
         return "User Service";
     }
-        private final AuthUserRepository userRepository;
+
+    private final AuthUserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     @Autowired
     private JavaMailSender javaMailSender;
