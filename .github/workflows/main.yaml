@@ -1,9 +1,18 @@
+<<<<<<< HEAD
 # name: Dev Stage for Comment Service
 
 # on:
 #   push:
 #     branches:
 #       - dev
+=======
+name: Test Stage for Comment Service
+
+on:
+  push:
+    branches:
+      - test
+>>>>>>> 617e5c168880e2901d6a17c5029940509920a8f8
 
 # jobs:
 #   testing:
@@ -26,8 +35,16 @@
 #       - name: Unit Tests
 #         run: mvn -B test --file pom.xml
 
+<<<<<<< HEAD
 #   # build-image:
 #   #   needs: testing
 #   #   uses: ./.github/workflows/build-image.yaml
 #   #   secrets:
 #   #     DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+=======
+  # build-image:
+  #   needs: testing
+  #   uses: ./.github/workflows/build-image.yaml
+  #   secrets:
+  #     DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+>>>>>>> 617e5c168880e2901d6a17c5029940509920a8f8
