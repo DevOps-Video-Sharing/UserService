@@ -26,8 +26,8 @@ jobs:
       - name: Unit Tests
         run: mvn -B test --file pom.xml
 
-  build-image:
-    needs: testing
-    uses: ./.github/workflows/build-image.yaml
-    secrets:
-      DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+  # build-image:
+  #   needs: testing
+  #   uses: ./.github/workflows/build-image.yaml
+  #   secrets:
+  #     DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
