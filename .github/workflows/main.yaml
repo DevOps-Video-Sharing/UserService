@@ -26,11 +26,8 @@ jobs:
       - name: Unit Tests
         run: mvn -B test --file pom.xml
 
- 
-
   notify:
     needs: testing
     uses: ./.github/workflows/notifyCD.yaml
     secrets:
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-      
