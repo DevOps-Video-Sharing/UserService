@@ -7,7 +7,7 @@ on:
 
 jobs:
   testing:
-    name: Testing Comment Service
+    name: Staging User Service
     runs-on: ubuntu-latest
     steps:
 
@@ -28,17 +28,9 @@ jobs:
 
  
 
-  build-image:
-    needs: testing
-    uses: ./.github/workflows/build-image.yaml
-    secrets:
-      DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-
- 
-
   notify:
     needs: build-image
-    uses: ./.github/workflows/notifyCI.yaml
+    uses: ./.github/workflows/notifyCD.yaml
     secrets:
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
       

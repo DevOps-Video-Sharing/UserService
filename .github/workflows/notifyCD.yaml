@@ -16,7 +16,7 @@ jobs:
         with:
           payload: |
             {
-              "text": "The Continuous Integration for User Service workflow has completed successfully."
+              "text": "The Continuous Deployment for User Service workflow has completed successfully."
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
@@ -30,7 +30,7 @@ jobs:
         with:
           payload: |
             {
-              "text": "The Continuous Integration for User Service workflow has failed."
+              "text": "The Continuous Deployment for User Service workflow has failed."
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
