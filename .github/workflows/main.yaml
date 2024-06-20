@@ -33,7 +33,7 @@ jobs:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   scan-image:
-    needs: build-image
+    needs: sonar-cloud-scan
     uses: ./.github/workflows/scan-image.yaml
 
   notify:
