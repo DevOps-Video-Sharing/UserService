@@ -26,19 +26,14 @@ jobs:
       - name: Unit Tests
         run: mvn -B test --file pom.xml
 
-
-  sonar-cloud-scan:
+  build-image:
     needs: testing
-    uses: ./.github/workflows/SonarQube.yaml
+    uses: ./.github/workflow/build-image.yaml
     secrets:
-      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-  scan-image:
-    needs: sonar-cloud-scan
-    uses: ./.github/workflows/scan-image.yaml
+      DOCKER_HUB_ACCESS_TOKEN: true
 
   notify:
-    needs: scan-image
+    needs: build-image
     uses: ./.github/workflows/notifyCI.yaml
     secrets:
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
