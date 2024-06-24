@@ -1,4 +1,4 @@
-name: Continuous Integration for Comment Service
+name: Continuous Integration for User Service
 
 on:
   push:
