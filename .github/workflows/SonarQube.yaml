@@ -1,4 +1,4 @@
-name: SonarCloud scan for User Services (Test Stage)
+name: SonarCloud scan for User Services
 on:
   workflow_call:
     secrets:
