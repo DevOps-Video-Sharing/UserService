@@ -30,7 +30,7 @@ jobs:
     needs: testing
     uses: ./.github/workflows/build-image.yaml
     secrets:
-      DOCKER_HUB_ACCESS_TOKEN: true
+      DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
   notify:
     needs: build-image
