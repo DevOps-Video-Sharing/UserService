@@ -28,7 +28,7 @@ jobs:
 
   build-image:
     needs: testing
-    uses: ./.github/workflow/build-image.yaml
+    uses: ./.github/workflows/build-image.yaml
     secrets:
       DOCKER_HUB_ACCESS_TOKEN: true
 
