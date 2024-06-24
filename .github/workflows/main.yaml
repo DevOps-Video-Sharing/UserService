@@ -1,4 +1,4 @@
-name: Test Stage for Comment Service
+name: Test Stage for User Service
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   testing:
-    name: Testing Comment Service
+    name: Testing User Service
     runs-on: ubuntu-latest
     steps:
 
