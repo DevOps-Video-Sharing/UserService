@@ -1,4 +1,4 @@
-name: Send Slack Notification for User Service (Test Stage)
+name: Send Slack Notification for User Service
 
 on:
   workflow_call:
