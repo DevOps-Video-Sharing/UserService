@@ -1,36 +1,36 @@
-name: Send Slack Notification for User Service
+# name: Send Slack Notification for User Service
 
-on:
-  workflow_call:
-    secrets:
-      SLACK_WEBHOOK_URL:
-        required: true
+# on:
+#   workflow_call:
+#     secrets:
+#       SLACK_WEBHOOK_URL:
+#         required: true
 
-jobs:
-  success_notifier:
-    if: success()
-    runs-on: ubuntu-latest
-    steps:
-      - name: Send success notification on Slack
-        uses: slackapi/slack-github-action@v1.24.0
-        with:
-          payload: |
-            {
-              "text": "The Continuous Integration for User Service workflow has completed successfully."
-            }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+# jobs:
+#   success_notifier:
+#     if: success()
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Send success notification on Slack
+#         uses: slackapi/slack-github-action@v1.24.0
+#         with:
+#           payload: |
+#             {
+#               "text": "The Continuous Integration for User Service workflow has completed successfully."
+#             }
+#         env:
+#           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
-  failure_notifier:
-    if: failure()
-    runs-on: ubuntu-latest
-    steps:
-      - name: Send failure notification on Slack
-        uses: slackapi/slack-github-action@v1.24.0
-        with:
-          payload: |
-            {
-              "text": "The Continuous Integration for User Service workflow has failed."
-            }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+#   failure_notifier:
+#     if: failure()
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Send failure notification on Slack
+#         uses: slackapi/slack-github-action@v1.24.0
+#         with:
+#           payload: |
+#             {
+#               "text": "The Continuous Integration for User Service workflow has failed."
+#             }
+#         env:
+#           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
