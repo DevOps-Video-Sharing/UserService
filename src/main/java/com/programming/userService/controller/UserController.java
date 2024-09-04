@@ -30,14 +30,20 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
+import com.programming.userService.util.JwtUtil;
+import com.programming.userService.entity.CustomUserDetails;
+import com.programming.userService.entity.AuthUser;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/user")
 public class UserController {
 
-private final AuthUserRepository userRepository;
+    private final AuthUserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JwtUtil jwtUtil;
+
     @Autowired
     private JavaMailSender javaMailSender;
 
@@ -89,13 +95,35 @@ private final AuthUserRepository userRepository;
     }
 
     private byte[] getDefaultAvatar() throws IOException {
-        String defaultAvatarPath = "/app/images/avatar.png"; // Path inside the Docker container
+        // String defaultAvatarPath = "/app/images/avatar.png"; // Path inside the Docker container
+        String defaultAvatarPath = "src/main/java/com/programming/userService/images/avatar.png"; // Path on local machine
         Path path = Paths.get(defaultAvatarPath);
         return Files.readAllBytes(path);
     }
 
+    @PostMapping("/login3")
+    public ResponseEntity<?> loginUser3(@RequestBody AuthUser user) {
+        try {
+            AuthUser userFromDb = userRepository.findByUsername(user.getUsername())
+                    .orElseThrow(() -> new Exception("User not found"));
+
+            if (passwordEncoder.matches(user.getPassword(), userFromDb.getPassword())) {
+                // Chuyển AuthUser sang CustomUserDetails
+                CustomUserDetails userDetails = new CustomUserDetails(userFromDb);
+                String token = jwtUtil.generateToken(userDetails); // Tạo JWT token với UserDetails
+                Map<String, String> response = new HashMap<>();
+                response.put("token", token);
+                return ResponseEntity.ok(response);
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
+    
     @PostMapping("/login2")
-    public ResponseEntity loginUser(@RequestBody AuthUser user) {
+    public ResponseEntity loginUser2(@RequestBody AuthUser user) {
         try {
             AuthUser userFromDb = userRepository.findByUsername(user.getUsername())
                     .orElseThrow(() -> new Exception("User not found"));
