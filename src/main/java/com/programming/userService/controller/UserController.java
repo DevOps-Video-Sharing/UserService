@@ -23,6 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -33,6 +34,8 @@ import java.util.Map;
 import com.programming.userService.util.JwtUtil;
 import com.programming.userService.entity.CustomUserDetails;
 import com.programming.userService.entity.AuthUser;
+import org.springframework.data.redis.core.RedisTemplate;
+
 @RestController
 @AllArgsConstructor
 @RequestMapping("/user")
@@ -40,7 +43,8 @@ public class UserController {
 
     private final AuthUserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-
+    private final RedisTemplate<String, Object> redisTemplate;
+    private static final String USER_CACHE = "USER_CACHE";
     @Autowired
     private JwtUtil jwtUtil;
 
@@ -164,10 +168,14 @@ public class UserController {
         }
     }
 
+    @Cacheable(value = USER_CACHE, key = "#id")
     @GetMapping("/listUserbyId/{id}")
     public ResponseEntity listUserbyId(@PathVariable("id") String id) {
         try {
-            return ResponseEntity.ok(userRepository.findById(id));
+            AuthUser user = userRepository.findById(id).orElseThrow(() -> new Exception("User not found"));
+            // Save user in Redis cache
+            redisTemplate.opsForHash().put(USER_CACHE, id, user);
+            return ResponseEntity.ok(user);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
