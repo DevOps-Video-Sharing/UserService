@@ -172,9 +172,22 @@ public class UserController {
     @GetMapping("/listUserbyId/{id}")
     public ResponseEntity listUserbyId(@PathVariable("id") String id) {
         try {
-            AuthUser user = userRepository.findById(id).orElseThrow(() -> new Exception("User not found"));
-            // Save user in Redis cache
+            // Attempt to fetch user from Redis cache
+            AuthUser cachedUser = (AuthUser) redisTemplate.opsForHash().get(USER_CACHE, id);
+
+            if (cachedUser != null) {
+                // If user is found in Redis, return it
+                return ResponseEntity.ok(cachedUser);
+            }
+
+            // If user is not found in Redis, fetch from MongoDB
+            AuthUser user = userRepository.findById(id)
+                    .orElseThrow(() -> new Exception("User not found"));
+
+            // Cache the user in Redis
             redisTemplate.opsForHash().put(USER_CACHE, id, user);
+
+            // Return the user data
             return ResponseEntity.ok(user);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
