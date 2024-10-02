@@ -33,14 +33,22 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Base64;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 @RestController
 @AllArgsConstructor
 @RequestMapping("/user")
 public class UserController {
 
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
+    
     @GetMapping("/")
     public String getServiceName(){
+        //ELK 
+        MDC.put("type", "userservice");
+        logger.info("User Service Start");
         return "User Service";
     }
 
