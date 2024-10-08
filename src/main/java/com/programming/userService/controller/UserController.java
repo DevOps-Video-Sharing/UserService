@@ -114,8 +114,8 @@ public class UserController {
     }
 
     private byte[] getDefaultAvatar() throws IOException {
-        // String defaultAvatarPath = "/app/images/avatar.png"; // Path inside the Docker container
-        String defaultAvatarPath = "src/main/java/com/programming/userService/images/avatar.png"; // Path on local machine
+        String defaultAvatarPath = "/app/images/avatar.png"; // Path inside the Docker container
+        //String defaultAvatarPath = "src/main/java/com/programming/userService/images/avatar.png"; // Path on local machine
         Path path = Paths.get(defaultAvatarPath);
         return Files.readAllBytes(path);
     }
