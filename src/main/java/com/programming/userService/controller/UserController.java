@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.mail.MailException;
@@ -36,6 +38,9 @@ import com.programming.userService.entity.CustomUserDetails;
 import com.programming.userService.entity.AuthUser;
 import org.springframework.data.redis.core.RedisTemplate;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @RestController
 @AllArgsConstructor
 @RequestMapping("/user")
@@ -45,6 +50,8 @@ public class UserController {
     private final PasswordEncoder passwordEncoder;
     private final RedisTemplate<String, Object> redisTemplate;
     private static final String USER_CACHE = "USER_CACHE";
+
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
     @Autowired
     private JwtUtil jwtUtil;
 
@@ -60,6 +67,9 @@ public class UserController {
     }
     @GetMapping("/")
     public String getServiceName(){
+        //ELK 
+        MDC.put("type", "userservice");
+        logger.info("User Service Start");
         return "User Service";
     }
 
@@ -92,6 +102,11 @@ public class UserController {
             user.setTimestamp(new Date());
             user.setAvatar(getDefaultAvatar());
             AuthUser save = userRepository.save(user);
+            AuthUser userFromDb = userRepository.findByUsername(user.getUsername())
+                    .orElseThrow(() -> new Exception("User not found"));
+            MDC.put("type", "userservice");
+            MDC.put("action", "register");
+            logger.info("UserID: " + userFromDb.getId());
             return ResponseEntity.ok(save);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
@@ -132,6 +147,9 @@ public class UserController {
             AuthUser userFromDb = userRepository.findByUsername(user.getUsername())
                     .orElseThrow(() -> new Exception("User not found"));
             if (passwordEncoder.matches(user.getPassword(), userFromDb.getPassword())) {
+                MDC.put("type", "userservice");
+                MDC.put("action", "login");
+                logger.info("UserID: " + userFromDb.getId());
                 return ResponseEntity.ok(userFromDb);
             } else {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
@@ -203,7 +221,12 @@ public class UserController {
             userFromDb.setFirstName(user.getFirstName());
             userFromDb.setLastName(user.getLastName());
             AuthUser save = userRepository.save(userFromDb);
+            String tempUserId = userFromDb.getId();
 
+            MDC.put("type", "userservice");
+            MDC.put("action", "update-profile");
+            logger.info("UserID: " + userFromDb.getId());
+            
             return ResponseEntity.ok(HttpStatus.OK);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
@@ -223,6 +246,10 @@ public class UserController {
 
             userFromDb.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
             AuthUser save = userRepository.save(userFromDb);
+
+            MDC.put("type", "userservice");
+            MDC.put("action", "change-password");
+            logger.info("UserID: " + userFromDb.getId());
 
             return ResponseEntity.ok("Password changed successfully");
         } catch (Exception e) {
