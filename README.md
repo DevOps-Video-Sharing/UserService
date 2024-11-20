@@ -29,4 +29,3 @@ The backend of this streaming project exposes the following API endpoints:
 
 
 "# UserService" 
-# UserService-NT548

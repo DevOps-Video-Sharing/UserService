@@ -7,12 +7,11 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
-import java.io.Serializable;
 
 @Data
 @Builder
 @Document("user")
-public class AuthUser implements Serializable {
+public class AuthUser {
     @Id
     private String id;
     @Indexed
@@ -25,7 +24,4 @@ public class AuthUser implements Serializable {
     private byte[] avatar;
     private String email;
     private Date timestamp;
-
-
-    private static final long serialVersionUID = 1L;
 }

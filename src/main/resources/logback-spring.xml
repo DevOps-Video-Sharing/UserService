@@ -4,7 +4,6 @@
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
         </encoder>
     </appender>
-
     <root level="INFO">
         <appender-ref ref="LOGSTASH"/>
     </root>
