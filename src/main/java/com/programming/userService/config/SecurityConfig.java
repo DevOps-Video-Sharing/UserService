@@ -12,6 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,25 +22,26 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain defaultFilterChain(HttpSecurity httpSecurity) throws Exception {
+        JwtRequestFilter jwtRequestFilter = new JwtRequestFilter();
         return httpSecurity
                 .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> auth.requestMatchers("/register", "/error").permitAll()
-                        .requestMatchers("/listUser").permitAll()
-                        .requestMatchers("/video/upload").permitAll()
-                        .requestMatchers("/video/list").permitAll()
-                        .requestMatchers("/file/upload").permitAll()
-                        .requestMatchers("/file/list").permitAll()
-                        .requestMatchers("/file/downloadZipFile").permitAll()
-                        .requestMatchers("/comments/upload").permitAll()
-                        .requestMatchers("/comments/**").permitAll()
-                        .requestMatchers("/video/**").permitAll()
-                        .requestMatchers("/login2").permitAll()
-                        .requestMatchers("/listUserbyId/**").permitAll()
-                        .requestMatchers("/updateProfile/**").permitAll()
-                        .requestMatchers("/send-verification-email").permitAll()
-                        .requestMatchers("/hello-world").permitAll()
-                        .requestMatchers("/**").permitAll()
+                .authorizeHttpRequests(auth -> auth.requestMatchers("/user/register", "/user/error").permitAll()
+                        // .requestMatchers("/listUser").permitAll()
+                        .requestMatchers("/user/login2").permitAll()
+                        .requestMatchers("/user/login3").permitAll()
+                        .requestMatchers("/user/listUserbyId/**").permitAll()
+                        .requestMatchers("/user/hello-world").permitAll()
+                        .requestMatchers("/user/send-verification-email").permitAll()
+                        .requestMatchers("/user/logout").permitAll()
+                        .requestMatchers("/user/listUserbyUsername").permitAll()
+                        .requestMatchers("/user/listUserbyId/**").permitAll()
+                        .requestMatchers("/user/updateProfile/**").permitAll()
+                        .requestMatchers("/user/changePassword/**").permitAll()
+                        .requestMatchers("/user/listUser").permitAll()
+
+                        .requestMatchers("/user/").authenticated()
                         .anyRequest().authenticated())
+                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
                 .httpBasic(Customizer.withDefaults())
                 .formLogin(Customizer.withDefaults())
                 .build();
