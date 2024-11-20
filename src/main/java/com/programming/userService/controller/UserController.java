@@ -97,6 +97,11 @@ public class UserController {
             user.setTimestamp(new Date());
             user.setAvatar(getDefaultAvatar());
             AuthUser save = userRepository.save(user);
+            AuthUser userFromDb = userRepository.findByUsername(user.getUsername())
+                    .orElseThrow(() -> new Exception("User not found"));
+            MDC.put("type", "userservice");
+            MDC.put("action", "register");
+            logger.info("UserID: " + userFromDb.getId());
             return ResponseEntity.ok(save);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
@@ -116,6 +121,9 @@ public class UserController {
             AuthUser userFromDb = userRepository.findByUsername(user.getUsername())
                     .orElseThrow(() -> new Exception("User not found"));
             if (passwordEncoder.matches(user.getPassword(), userFromDb.getPassword())) {
+                MDC.put("type", "userservice");
+                MDC.put("action", "login");
+                logger.info("UserID: " + userFromDb.getId());
                 return ResponseEntity.ok(userFromDb);
             } else {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
@@ -173,6 +181,9 @@ public class UserController {
             userFromDb.setFirstName(user.getFirstName());
             userFromDb.setLastName(user.getLastName());
             AuthUser save = userRepository.save(userFromDb);
+            MDC.put("type", "userservice");
+            MDC.put("action", "update-profile");
+            logger.info("UserID: " + userFromDb.getId());
 
             return ResponseEntity.ok(HttpStatus.OK);
         } catch (Exception e) {
@@ -194,7 +205,9 @@ public class UserController {
 
             userFromDb.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
             AuthUser save = userRepository.save(userFromDb);
-
+            MDC.put("type", "userservice");
+            MDC.put("action", "change-password");
+            logger.info("UserID: " + userFromDb.getId());
             return ResponseEntity.ok("Password changed successfully");
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
