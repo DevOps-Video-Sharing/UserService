@@ -40,7 +40,7 @@ jobs:
           ' scan-results.json > vulnerability-report.md
 
       - name: Upload vulnerability report
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: vulnerability-report
           path: vulnerability-report.md
