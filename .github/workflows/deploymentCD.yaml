@@ -36,10 +36,12 @@ jobs:
           VPN_USERNAME: ${{ secrets.VPN_USERNAME }}
           VPN_PASSWORD: ${{ secrets.VPN_PASSWORD }}
         run: |
+          echo "${{ secrets.VPN_PROFILE_BASE64 }}" | base64 --decode > profile-559.ovpn
           echo -e "${VPN_USERNAME}\n${VPN_PASSWORD}" > vpn-auth.txt
           sudo openvpn --config profile-559.ovpn --auth-user-pass vpn-auth.txt --daemon
           sleep 10
           rm vpn-auth.txt
+          rm profile-559.ovpn
 
       - name: Deploy to Server
         uses: appleboy/ssh-action@v0.1.10
