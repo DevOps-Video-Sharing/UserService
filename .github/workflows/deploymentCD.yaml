@@ -48,6 +48,7 @@ jobs:
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
+            sudo su
             cd /home/ubuntu/K8S
             kubectl apply -f user-mongo-deployment.yaml
             kubectl apply -f user-service-deployment.yaml
