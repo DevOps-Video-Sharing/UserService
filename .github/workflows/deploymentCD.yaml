@@ -52,6 +52,7 @@ jobs:
             sudo kubectl apply -f user-mongo-deployment.yaml
             sudo kubectl apply -f user-service-deployment.yaml
 
+
       # - name: Apply Kubernetes manifests
       #   run: |
       #     kubectl apply -f resources.yaml
