@@ -3,6 +3,7 @@ name: Continuous Integration for User Service
 on:
   push:
     branches:
+      - main
       - ducbao
 
 jobs:
