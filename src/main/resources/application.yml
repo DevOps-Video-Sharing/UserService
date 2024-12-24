@@ -6,4 +6,4 @@ spring:
     name: user-service
   data:
     mongodb:
-      uri: ${SPRING_DATA_MONGODB_URI:mongodb://10.32.0.11:27017/user-service}
+      uri: ${SPRING_DATA_MONGODB_URI:mongodb://10.40.0.9:27017/user-service}
